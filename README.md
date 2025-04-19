@@ -1,6 +1,6 @@
-# AI Document to Presentation Converter
+# Create PowerPoint from Documents - Powered by GenAI
 
-The **AI Document to Presentation Converter** is a web application that allows users to convert their documents (`.docx` and `.pdf`) into professionally styled PowerPoint presentations. Leveraging Artificial Intelligence, the app designs a detailed slide outline complete with speaker notes, visual suggestions, and actionable tips, specifically tailored to your chosen tone, audience, and visual style.
+This web app allows users to convert  documents (`.docx` and `.pdf`) into professionally styled PowerPoint presentations. Using a highly structured approach prompt, it designs a detailed slide outline complete with speaker notes, visual suggestions, and actionable tips, specifically tailored to the chosen tone, audience, and visual style.
 
 ---
 
