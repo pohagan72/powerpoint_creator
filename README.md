@@ -10,8 +10,6 @@ This web app allows users to convert  documents (`.docx` and `.pdf`) into profes
 - [How It Works](#how-it-works)
 - [Installation & Running Locally](#installation--running-locally)
 - [Dockerized Deployment](#dockerized-deployment)
-- [Configuration](#configuration)
-- [Project Structure](#project-structure)
 - [License](#license)
 
 ---
