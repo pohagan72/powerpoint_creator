@@ -132,41 +132,6 @@ This application has been dockerized, allowing you to run it inside a container 
 
 ---
 
-## Configuration
-
-- **Upload & Generated Files:**  
-  - Uploaded files are stored in the `uploads` directory.
-  - Generated PowerPoint presentations are saved in the `generated` directory.
-
-- **Templates:**  
-  The app supports different visual themes defined in `app.py`:
-  - Professional
-  - Creative
-  - Minimalist
-
-- **AI Service:**  
-  The AI prompt is sent to an Azure OpenAI endpoint specified by the environment variables:
-  - `AZURE_OPENAI_ENDPOINT`
-  - `AZURE_OPENAI_API_KEY`
-
----
-
-## Project Structure
-
-```plaintext
-powerpoint_creator/
-├── app.py                   # Main application logic for file processing and API calls
-├── run.py                   # Entry point using Waitress for production
-├── requirements.txt         # Python dependencies
-├── Dockerfile               # Docker configuration (if available)
-├── uploads/                 # Directory for uploaded files
-├── generated/               # Directory for generated presentations
-└── templates/
-    └── index.html           # Frontend UI for the web app
-```
-
----
-
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
