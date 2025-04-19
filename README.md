@@ -1,4 +1,3 @@
-```md
 # AI Document to Presentation Converter
 
 The **AI Document to Presentation Converter** is a web application that allows users to convert their documents (`.docx` and `.pdf`) into professionally styled PowerPoint presentations. Leveraging Artificial Intelligence, the app designs a detailed slide outline complete with speaker notes, visual suggestions, and actionable tips, specifically tailored to your chosen tone, audience, and visual style.
@@ -173,5 +172,3 @@ powerpoint_creator/
 This project is licensed under the [MIT License](LICENSE).
 
 ---
-
-```
