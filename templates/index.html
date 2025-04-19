@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Document to Presentation Converter</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-color: #005A9C; /* Professional Blue */
+            --secondary-color: #007bff; /* Brighter Blue for accents/hovers */
+            --text-color: #333;
+            --label-color: #555;
+            --border-color: #ced4da;
+            --border-color-light: #dee2e6;
+            --background-color: #f8f9fa;
+            --container-bg: #ffffff;
+            --success-bg: #d1e7dd;
+            --success-text: #0f5132;
+            --success-border: #badbcc;
+            --error-bg: #f8d7da;
+            --error-text: #842029;
+            --error-border: #f5c2c7;
+            --disabled-bg: #e9ecef;
+            --disabled-text: #adb5bd;
+        }
+        body { font-family: 'Open Sans', sans-serif; background-color: var(--background-color); margin: 0; padding: 0; color: var(--text-color); line-height: 1.6; }
+        .app-header { background-color: var(--container-bg); padding: 1rem 0; text-align: center; border-bottom: 1px solid var(--border-color-light); margin-bottom: 2rem; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); }
+        .app-header img { height: 40px; vertical-align: middle; }
+        .container { max-width: 750px; margin: 0 auto 2rem auto; background: var(--container-bg); border-radius: 8px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08); padding: 2.5rem; }
+        h1 { color: var(--primary-color); text-align: center; margin-bottom: 0.5rem; font-weight: 700; }
+        .intro-text { text-align: center; color: var(--label-color); margin-bottom: 2.5rem; font-size: 1.1rem; }
+        .step-section { margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border-color-light); }
+        .step-section:last-of-type { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .step-title { font-weight: 600; color: var(--primary-color); margin-bottom: 1rem; font-size: 1.1rem; }
+        .step-title .step-number { display: inline-block; background-color: var(--primary-color); color: white; border-radius: 50%; width: 24px; height: 24px; line-height: 24px; text-align: center; font-size: 0.9rem; margin-right: 0.5rem; }
+        label { display: block; margin-bottom: 0.6rem; font-weight: 600; color: var(--label-color); font-size: 0.95rem; }
+        label .optional-tag { font-weight: 400; color: #888; font-size: 0.85rem; }
+        label .tooltip-icon { display: inline-block; margin-left: 5px; width: 16px; height: 16px; background-color: #aaa; color: white; border-radius: 50%; text-align: center; font-size: 11px; line-height: 16px; cursor: help; font-style: normal; }
+        input[type="text"], select, button { width: 100%; padding: 0.8rem 1rem; border-radius: 6px; border: 1px solid var(--border-color); font-size: 1rem; box-sizing: border-box; background-color: var(--container-bg); color: var(--text-color); transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out; }
+        select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 1rem center; background-size: 1em; padding-right: 2.5rem; }
+        input[type="text"]:focus, select:focus { border-color: var(--secondary-color); outline: 0; box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); }
+        button { background: var(--primary-color); color: white; border: none; cursor: pointer; font-weight: 600; transition: background-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out; display: block; margin: 1.5rem auto 0 auto; max-width: 300px; }
+        button:hover:not(:disabled) { background: var(--secondary-color); box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); }
+        button:disabled { background: var(--disabled-bg); color: var(--disabled-text); cursor: not-allowed; box-shadow: none; }
+        #browse-btn { background: #6c757d; margin-top: 1rem; width: auto; max-width: none; padding: 0.6rem 1.5rem; display: inline-block; margin: 1rem 0 0 0; }
+        #browse-btn:hover:not(:disabled) { background: #5a6268; }
+        #drop-zone { border: 2px dashed var(--border-color-light); border-radius: 8px; padding: 2.5rem; text-align: center; margin-top: 0.5rem; cursor: pointer; transition: border-color 0.3s ease-in-out, background-color 0.3s ease-in-out; background-color: #fdfdfd; }
+        #drop-zone:hover, #drop-zone.dragover { border-color: var(--secondary-color); background-color: #eef6ff; }
+        #drop-zone p { margin: 0.5rem 0; color: var(--label-color); }
+        #file-info { margin-top: 1rem; font-weight: 600; color: #28a745; text-align: center; }
+        #status-container { margin-top: 2rem; text-align: center; }
+        #status { padding: 1rem 1.5rem; border-radius: 6px; display: none; font-weight: 600; border: 1px solid transparent; max-width: 600px; margin: 0 auto 1rem auto; }
+        .success { background: var(--success-bg); color: var(--success-text); border-color: var(--success-border); }
+        .error { background: var(--error-bg); color: var(--error-text); border-color: var(--error-border); }
+        #status::before { display: inline-block; margin-right: 0.75rem; font-weight: bold; }
+        .success::before { content: '✓'; }
+        .error::before { content: '✕'; }
+        .loader-container { text-align: center; margin-top: 2rem; display: none; }
+        .loader { border: 5px solid var(--disabled-bg); border-top: 5px solid var(--primary-color); border-radius: 50%; width: 45px; height: 45px; animation: spin 1s linear infinite; margin: 0 auto 0.75rem auto; }
+        #loader-text { color: var(--label-color); font-weight: 600; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .template-preview { display: flex; gap: 1rem; margin-top: 1rem; justify-content: space-around; flex-wrap: wrap; } /* Added flex-wrap */
+        .template-option { flex: 1; min-width: 120px; max-width: 150px; text-align: center; cursor: pointer; padding: 0.8rem; border-radius: 6px; border: 2px solid var(--border-color-light); transition: all 0.2s ease-in-out; background-color: var(--container-bg); margin-bottom: 0.5rem; } /* Added min-width and margin-bottom */
+        .template-option:hover { border-color: #adb5bd; }
+        .template-option.selected { border-color: var(--primary-color); background: #eef6ff; font-weight: 600; box-shadow: 0 0 8px rgba(0, 123, 255, 0.15); }
+        .template-color { width: 100%; height: 25px; border-radius: 4px; margin-bottom: 0.6rem; border: 1px solid rgba(0,0,0,0.1); }
+        .api-warning { background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; padding: 1rem; margin-bottom: 2rem; border-radius: 6px; text-align: center; font-weight: 600;}
+        @media (max-width: 768px) { .container { padding: 1.5rem; } h1 { font-size: 1.8rem; } .intro-text { font-size: 1rem; } .template-preview { flex-direction: row; /* Keep row layout */ } .template-option { max-width: 45%; /* Allow two per row */ min-width: 100px; } button { max-width: 100%; } }
+        @media (max-width: 480px) { .template-option { max-width: 100%; } } /* Stack on very small screens */
+    </style>
+</head>
+<body>
+    <header class="app-header">
+        <!-- Add your logo image path if available -->
+        <!-- <img src="/static/your_logo.png" alt="Logo"> -->
+         <h1>Gen AI Document to Presentation Converter</h1> <!-- Moved H1 to header if no logo -->
+    </header>
+
+    <div class="container">
+        <!-- Removed H1 from here -->
+        <p class="intro-text">Instantly convert your documents (.docx, .pdf) into professionally styled PowerPoint presentations using GenAI.</p>
+
+        {% if not api_key_configured %}
+        <div class="api-warning">
+            <strong>Configuration Notice:</strong> AI Service connection details may be missing. Presentation generation will likely fail.
+        </div>
+        {% endif %}
+
+        <!-- Step 1: Presentation Style -->
+        <div class="step-section">
+            <div class="step-title"><span class="step-number">1</span>Choose Presentation Style</div>
+            <div class="form-group">
+                <label for="template">Visual Theme:</label>
+                <select id="template" name="template">
+                    <option value="professional">Professional</option>
+                    <option value="creative">Creative</option>
+                    <option value="minimalist">Minimalist</option>
+                </select>
+                <div class="template-preview">
+                    <div class="template-option selected" data-template="professional">
+                        <div class="template-color" style="background: linear-gradient(135deg, #002060, #0070c0);"></div> <!-- Example gradient -->
+                        Professional
+                    </div>
+                    <div class="template-option" data-template="creative">
+                        <div class="template-color" style="background: linear-gradient(135deg, #712b7c, #d8654f);"></div> <!-- Example gradient -->
+                        Creative
+                    </div>
+                    <div class="template-option" data-template="minimalist">
+                        <div class="template-color" style="background: linear-gradient(135deg, #404040, #a0a0a0);"></div> <!-- Example gradient -->
+                        Minimalist
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 2: Content Options -->
+        <div class="step-section">
+            <div class="step-title"><span class="step-number">2</span>Refine Content (Optional)</div>
+            <div class="form-group" style="margin-bottom: 1rem;"> <!-- Added margin -->
+                <label for="audience">
+                    Target Audience <span class="optional-tag">(Helps tailor language)</span>
+                    <i class="tooltip-icon" title="Select the primary audience to help the AI adjust the content's focus and complexity.">?</i>
+                 </label>
+                <select id="audience" name="audience">
+                    <option value="">-- Not Specified --</option>
+                    <option value="Executives">Executives</option>
+                    <option value="Technical Team">Technical Team</option>
+                    <option value="General Public">General Public</option>
+                    <option value="Clients / Customers">Clients / Customers</option>
+                    <option value="New Hires">New Hires</option>
+                    <option value="Internal Staff">Internal Staff</option>
+                    <option value="Investors">Investors</option>
+                    <option value="Students">Students</option>
+                    <option value="Policy Makers">Policy Makers</option>
+                </select>
+            </div>
+            <div class="form-group">
+                 <label for="tone">
+                    Desired Tone <span class="optional-tag">(Adjusts formality & style)</span>
+                    <i class="tooltip-icon" title="Choose the overall tone. The AI will try to reflect this in the generated text and suggestions.">?</i>
+                 </label>
+                <select id="tone" name="tone">
+                    <option value="">-- Not Specified --</option>
+                    <option value="Formal">Formal</option>
+                    <option value="Informal">Informal</option>
+                    <option value="Persuasive">Persuasive</option>
+                    <option value="Informative">Informative</option>
+                    <option value="Enthusiastic">Enthusiastic</option>
+                    <option value="Objective / Neutral">Objective / Neutral</option>
+                    <option value="Serious">Serious</option>
+                    <option value="Technical">Technical</option>
+                    <option value="Motivational">Motivational</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Step 3: Upload Document -->
+        <div class="step-section">
+             <div class="step-title"><span class="step-number">3</span>Upload Document</div>
+            <input type="file" id="file-input" accept=".docx,.pdf,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" style="display: none;">
+            <div class="form-group">
+                <label>Source File (.docx or .pdf, max 32MB):</label>
+                <div id="drop-zone">
+                    <p>Drag & drop your file here</p>
+                    <p>or</p>
+                    <button type="button" id="browse-btn">Browse Files</button>
+                    <div id="file-info"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Button -->
+        <button type="button" id="convert-btn" disabled>Generate Presentation</button>
+
+        <!-- Loader and Status Area -->
+        <div class="loader-container" id="loader-container">
+             <div id="loader" class="loader"></div>
+             <p id="loader-text">Processing...</p>
+        </div>
+        <div id="status-container">
+            <div id="status"></div>
+            <!-- Download button will be added here by JS -->
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropZone = document.getElementById('drop-zone');
+            const fileInput = document.getElementById('file-input');
+            const browseBtn = document.getElementById('browse-btn');
+            const convertBtn = document.getElementById('convert-btn');
+            const statusDiv = document.getElementById('status');
+            const statusContainer = document.getElementById('status-container');
+            const loaderContainer = document.getElementById('loader-container');
+            const loaderText = document.getElementById('loader-text');
+            const templateSelect = document.getElementById('template');
+            const templateOptions = document.querySelectorAll('.template-option');
+            const fileInfoDiv = document.getElementById('file-info');
+            const audienceSelect = document.getElementById('audience');
+            const toneSelect = document.getElementById('tone');
+
+            let selectedFile = null;
+            const MAX_FILE_SIZE = 32 * 1024 * 1024; // 32 MB
+
+            templateOptions.forEach(option => {
+                option.addEventListener('click', function() { selectTemplateOption(this.dataset.template); });
+            });
+            templateSelect.addEventListener('change', function() { selectTemplateOption(this.value); });
+            browseBtn.addEventListener('click', () => fileInput.click());
+            fileInput.addEventListener('change', function(e) { if (e.target.files.length) { handleFileSelection(e.target.files[0]); } });
+            dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+            ['dragleave', 'dragend', 'drop'].forEach(type => { dropZone.addEventListener(type, (e) => { e.preventDefault(); dropZone.classList.remove('dragover'); }); });
+            dropZone.addEventListener('drop', (e) => { if (e.dataTransfer.files.length) { handleFileSelection(e.dataTransfer.files[0]); fileInput.files = e.dataTransfer.files; } });
+            convertBtn.addEventListener('click', convertFile);
+
+            function selectTemplateOption(templateValue) {
+                 templateOptions.forEach(opt => { opt.classList.toggle('selected', opt.dataset.template === templateValue); });
+                 if (templateSelect.value !== templateValue) { templateSelect.value = templateValue; }
+            }
+
+            function handleFileSelection(file) {
+                clearStatus();
+                fileInfoDiv.textContent = '';
+                const allowedExtensions = ['docx', 'pdf'];
+                const fileExtension = file.name.split('.').pop()?.toLowerCase() || ''; // Added safety for names without extensions
+                const allowedMimeTypes = ['application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/pdf'];
+
+                // Check both extension and MIME type if available
+                let typeValid = allowedExtensions.includes(fileExtension);
+                if (file.type) { // Only check MIME if browser provides it
+                    typeValid = typeValid && allowedMimeTypes.some(type => file.type.startsWith(type));
+                }
+
+                if (!typeValid) {
+                    showStatus(`Invalid file type: .${fileExtension || 'unknown'}. Please upload a .docx or .pdf file.`, 'error');
+                    resetFileInput(); return;
+                }
+                if (file.size > MAX_FILE_SIZE) {
+                     showStatus(`File is too large (${formatFileSize(file.size)}). Max size: ${formatFileSize(MAX_FILE_SIZE)}.`, 'error');
+                     resetFileInput(); return;
+                }
+                selectedFile = file;
+                fileInfoDiv.textContent = `Selected: ${file.name} (${formatFileSize(file.size)})`;
+                convertBtn.disabled = false;
+            }
+
+            function resetFileInput() {
+                 fileInput.value = ''; selectedFile = null; fileInfoDiv.textContent = ''; convertBtn.disabled = true;
+            }
+
+            function formatFileSize(bytes) {
+                if (bytes === 0) return '0 Bytes'; const k = 1024; const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+            }
+
+             function setUIState(processing) {
+                 convertBtn.disabled = processing || !selectedFile;
+                 templateSelect.disabled = processing; audienceSelect.disabled = processing; toneSelect.disabled = processing;
+                 fileInput.disabled = processing; browseBtn.disabled = processing;
+                 dropZone.style.opacity = processing ? 0.6 : 1; dropZone.style.pointerEvents = processing ? 'none' : 'auto';
+                 loaderContainer.style.display = processing ? 'block' : 'none';
+                 if (processing) { clearStatus(); }
+            }
+
+            function updateLoaderText(text) { loaderText.textContent = text; }
+
+            function convertFile() {
+                if (!selectedFile) { showStatus('Please select a valid document file first.', 'error'); return; }
+
+                setUIState(true);
+                updateLoaderText('Submitting request...'); // Updated initial text
+
+                const formData = new FormData();
+                formData.append('file', selectedFile);
+                formData.append('template', templateSelect.value);
+                formData.append('audience', audienceSelect.value);
+                formData.append('tone', toneSelect.value);
+
+                fetch('/upload', { method: 'POST', body: formData })
+                .then(async response => {
+                    // *** UPDATED ERROR HANDLING ***
+                    if (response.status === 429) { // Specifically check for Too Many Requests
+                        const errData = await response.json();
+                        throw new Error(errData.error || 'Server is busy. Please try again shortly.');
+                    } else if (!response.ok) { // Handle other non-2xx errors
+                        let errorMsg = 'Conversion failed. Please try again.';
+                        try {
+                            const errData = await response.json();
+                            errorMsg = errData.error || `Server error (${response.status}). Please check the file or contact support.`;
+                        } catch (jsonError) {
+                             errorMsg = `Server error (${response.status}). Unable to process the request.`;
+                            console.error("Failed to parse error response as JSON:", jsonError, await response.text()); // Log raw text too
+                        }
+                        throw new Error(errorMsg);
+                    }
+                    // If response is OK
+                    updateLoaderText('Generating presentation structure...');
+                    return response.blob();
+                })
+                .then(blob => {
+                     updateLoaderText('Finalizing presentation...');
+                     showStatus('Presentation generated successfully!', 'success');
+
+                     const downloadBtn = document.createElement('button');
+                     const baseName = selectedFile.name.substring(0, selectedFile.name.lastIndexOf('.')) || selectedFile.name;
+                     const downloadFilename = `${baseName}_presentation.pptx`;
+                     downloadBtn.textContent = `Download Presentation (${downloadFilename})`;
+                     downloadBtn.id = 'download-btn'; downloadBtn.style.marginTop = '1rem';
+                     downloadBtn.onclick = () => {
+                         const url = window.URL.createObjectURL(blob); const a = document.createElement('a');
+                         a.style.display = 'none'; a.href = url; a.download = downloadFilename;
+                         document.body.appendChild(a); a.click(); window.URL.revokeObjectURL(url); a.remove();
+                     };
+                    statusContainer.appendChild(downloadBtn);
+                     // resetFileInput(); // Optional: reset after successful download
+                })
+                .catch(error => {
+                    console.error('Conversion Error:', error);
+                    showStatus(`Error: ${error.message}`, 'error'); // Displays the specific error (including 429 message)
+                })
+                .finally(() => {
+                    setUIState(false);
+                });
+            }
+
+            function showStatus(message, type) {
+                statusDiv.textContent = message; statusDiv.className = type; statusDiv.style.display = 'block';
+            }
+
+            function clearStatus() {
+                statusDiv.textContent = ''; statusDiv.style.display = 'none'; statusDiv.className = '';
+                const existingDownloadBtn = document.getElementById('download-btn');
+                if (existingDownloadBtn) { existingDownloadBtn.remove(); }
+            }
+
+            // Initial setup
+             selectTemplateOption(templateSelect.value); // Sync visual selection on load
+
+        });
+    </script>
+</body>
+</html>
